@@ -1,5 +1,5 @@
 const request = require('supertest');
-const db = require('../data/dbConfig');
+const db = require('./data/dbConfig');
 const server = require('./server');
 
  afterEach(async () => {
@@ -10,36 +10,33 @@ describe('server.js', () => {
   describe('Get /games endpoint', () => {
 
     it('Responds with a status code of 200', async () => {
-        let response = await request(server).get('/games');
-        expect(response.status).toBe(200);
+        let res = await request(server).get('/games');
+        expect(res.status).toBe(200);
     })
-
-    it('Responds with JSON', async () => {
-        let response = await request(server).get('/games');
-        expect(response.type).toMatch(/json/i);
-     });
 
     it('Responds with empty array', async () => {
       let expected = [];
-      let response = await request(server).get('/games');
-      expect(response.body).toEqual(expected);
+      res = await request(server).get('/games');
+      expect(res.body).toEqual(expected);
      });
 
     it('should respond with an array of games', async () => {
        let expected = [
-          {
+          {  
+             id: 1,
              title: 'Pacman',
              genre: 'Arcade',
              releaseYear: 1980,
           },
           {
+             id: 2,
              title: 'Snake',
              genre: 'Mobile',
              releaseYear: 1981,
           },
        ];
 
-       let response = await request(server)
+       let res = await request(server)
          .post('/games')
          .send({
             title: 'Pacman',
@@ -47,17 +44,15 @@ describe('server.js', () => {
             releaseYear: 1980,
          });   
 
-         response = await request(server)
-           .post('/games')
-           .send({
+         res = await request(server).post('/games').send({
               title: 'Snake',
               genre: 'Mobile',
               releaseYear: 1981,
            });   
 
-         response = await request(server).get('/games');
+         res = await request(server).get('/games');
 
-         expect(response.body).toEqual(expected);
+         expect(res.body).toEqual(expected);
      });
   });
 
@@ -69,9 +64,8 @@ describe('server.js', () => {
            releaseYear: 1980,
         };
 
-        let res = await request(server)
-          .post('/games')
-          .send(body);
+        let res = await request(server).post('/games').send(body);
+
           expect(res.status).toBe(201);
      });
 
@@ -82,16 +76,13 @@ describe('server.js', () => {
            releaseYear: 1980,
         };
 
-        let res = await request(server)
-          .post('/games')
-          .send(body);
+        let res = await request(server).post('/games').send(body);
           expect(res.body).toEqual([1]);
      });
 
       it('Returns the id of the created game', async () => {
         let body = {
-           title: 'Pacman',
-           genre: null,
+           genre: 'Arcade',
            releaseYear: 1980,
         };
 
